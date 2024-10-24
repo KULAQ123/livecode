@@ -2,33 +2,44 @@
   <h1>Point Box</h1>
   <div class="buttons">
     <button @click="undoPoint">Undo Point</button>
-    <button @click="redoPoint">Redo Point</button>
+    <button @click="redoPoints">Redo Point</button>
   </div>
   <div class="point-box" @click="plotPoint">
-    <div v-for="point in points" class="point" :style="{ top: `${point.y}%`, left: `${point.x}%` }"></div>
+    <div
+        v-for="(point, index) in points"
+        :key="index"
+        class="point"
+        :style="{ top: `${point.y}%`, left: `${point.x}%` }"
+    ></div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 
-let points = [];
-let deletedPoints = [];
+const points = ref([]);
+const deletedPoints = ref([]);
 
-const plotPoint = (event) => {
+const plotPoint = (e) => {
   points.value.push({
     x: (e.offsetX / window.innerWidth) * 100,
     y: (e.offsetY / window.innerHeight) * 100,
   });
+
 }
 
 function undoPoint() {
-  const deletedPoint = points.pop();
-  deletedPoints.value.push(deletedPoint);
+  if (points.value.length > 0) {
+    const deletedPoint = points.value.pop();
+    deletedPoints.value.push(deletedPoint);
+  }
 };
 
 const redoPoints = () => {
-  const reAddedPoint = deletedPoints.value.pop();
-  points.push(reAddedPoint);
+  if (deletedPoints.value.length > 0) {
+    const reAddedPoint = deletedPoints.value.pop();
+    points.value.push(reAddedPoint);
+  }
 };
 
 </script>
